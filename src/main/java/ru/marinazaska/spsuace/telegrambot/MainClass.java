@@ -1,3 +1,5 @@
+package ru.marinazaska.spsuace.telegrambot;
+
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -13,6 +15,7 @@ public class MainClass extends TelegramLongPollingBot {
     public MainClass(DefaultBotOptions botOptions) {
         super(botOptions);
     }
+
     public static void main(String[] args) {
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
@@ -29,12 +32,22 @@ public class MainClass extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        Message message = update.getMessage();
-        SendMessage sendMessage = new SendMessage(message.getChatId(), message.getText());
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
+        update.getUpdateId();
+        SendMessage sendMessage = new SendMessage().setChatId((update.getMessage().getChatId()));
+        if(update.getMessage().getText().equals("Кто чемпион?")) {
+            sendMessage.setText("СКА ЧЕМПИОН!");
+            try {
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        } else{
+            sendMessage.setText("Пиши мне если тоже фанат хоккея!!!");
+            try {
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -47,5 +60,5 @@ public class MainClass extends TelegramLongPollingBot {
     public String getBotToken() {
         return "725156186:AAGJ_40zF7T5pFg50uruFTz_iz-Cqui1jnc";
     }
-}
 
+}
