@@ -6,13 +6,16 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.ApiContext;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
-public class MainClass extends TelegramLongPollingBot {
-    public MainClass(DefaultBotOptions botOptions) {
+public class MyBot extends TelegramLongPollingBot {
+
+    public static final String USERNAME = "@Mashas_SKA_Bot";
+    public static final String TOKEN = "725156186:AAGJ_40zF7T5pFg50uruFTz_iz-Cqui1jnc";
+
+    public MyBot(DefaultBotOptions botOptions) {
         super(botOptions);
     }
 
@@ -24,7 +27,7 @@ public class MainClass extends TelegramLongPollingBot {
             botOptions.setProxyHost("177.8.226.254");
             botOptions.setProxyPort(8080);
             botOptions.setProxyType(DefaultBotOptions.ProxyType.HTTP);
-            telegramBotsApi.registerBot(new MainClass(botOptions));
+            telegramBotsApi.registerBot(new MyBot(botOptions));
         } catch (TelegramApiRequestException e) {
             e.printStackTrace();
         }
@@ -34,31 +37,27 @@ public class MainClass extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         update.getUpdateId();
         SendMessage sendMessage = new SendMessage().setChatId((update.getMessage().getChatId()));
-        if(update.getMessage().getText().equals("Кто чемпион?")) {
-            sendMessage.setText("СКА ЧЕМПИОН!");
-            try {
-                execute(sendMessage);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-        } else{
-            sendMessage.setText("Пиши мне если тоже фанат хоккея!!!");
-            try {
-                execute(sendMessage);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+        if (update.getMessage().getText().equals("Who is the champion?")) {
+            sendMessage.setText("SKA IS THE BEST!!!");
+        } else {
+            sendMessage.setText("If you like hockey, ask who is the champion:)");
+        }
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 
     @Override
     public String getBotUsername() {
-        return "Mashas_SKA_Bot";
+        return USERNAME;
     }
 
     @Override
     public String getBotToken() {
-        return "725156186:AAGJ_40zF7T5pFg50uruFTz_iz-Cqui1jnc";
+        return TOKEN;
     }
-
 }
+
+
