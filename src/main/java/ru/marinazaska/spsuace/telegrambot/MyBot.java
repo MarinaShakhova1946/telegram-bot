@@ -79,41 +79,42 @@ public class MyBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         update.getUpdateId();
-        SendMessage sendMessage = new SendMessage().setChatId((update.getMessage().getChatId()));
-        if (update.getMessage().getText().equals("My keyboard")) {
-            try {
-                execute(sendReplyKeyBoardMessage(update.getMessage().getChatId()));
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
+        if (update.hasMessage()) {
+            SendMessage sendMessage = new SendMessage().setChatId((update.getMessage().getChatId()));
+            if (update.getMessage().getText().equals("My keyboard")) {
+                try {
+                    execute(sendReplyKeyBoardMessage(update.getMessage().getChatId()));
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else if (update.getMessage().getText().equals("Team")) {
+                try {
+                    execute(sendInlineKeyBoardMessage(update.getMessage().getChatId()));
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                if (update.getMessage().getText().equals("/hello")) {
+                    sendMessage.setText(String.valueOf(new HelloCommand()));
+                } else if (update.getMessage().getText().equals("Who is the champion?")) {
+                    sendMessage.setText("SKA IS THE BEST!!!");
+                } else {
+                    sendMessage.setText("If you like hockey, ask who is the champion:)");
+                }
+                try {
+                    execute(sendMessage);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
             }
-        } else if (update.getMessage().getText().equals("Team")) {
-            try {
-                execute(sendInlineKeyBoardMessage(update.getMessage().getChatId()));
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-        } else if(update.hasCallbackQuery()){
-                String callbackId = update.getCallbackQuery().getId();
-                AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery()
-                        .setCallbackQueryId(callbackId)
-                        .setText("Okey")
-                        .setShowAlert(true);
+        } else if (update.hasCallbackQuery()) {
+            String callbackId = update.getCallbackQuery().getId();
+            AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery()
+                    .setCallbackQueryId(callbackId)
+                    .setText("Okey")
+                    .setShowAlert(true);
             try {
                 execute(answerCallbackQuery);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            if (update.getMessage().getText().equals("/hello")) {
-                sendMessage.setText(String.valueOf(new HelloCommand()));
-            } else if (update.getMessage().getText().equals("Who is the champion?")) {
-                sendMessage.setText("SKA IS THE BEST!!!");
-            } else {
-                sendMessage.setText("If you like hockey, ask who is the champion:)");
-            }
-            try {
-                execute(sendMessage);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
