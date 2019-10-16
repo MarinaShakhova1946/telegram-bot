@@ -8,7 +8,10 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
@@ -48,25 +51,49 @@ public class MyBot extends TelegramLongPollingBot {
         rowList.add(keyboardButtonsRow1);
 
         List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
-        keyboardButtonsRow1.add(new InlineKeyboardButton().setText("Avangard").setSwitchInlineQuery("Team \"Avangard\" is very cool"));
-        keyboardButtonsRow1.add(new InlineKeyboardButton().setText("Ak Bars").setCallbackData("Team \"Ak Bars\" is very technical"));
+        keyboardButtonsRow2.add(new InlineKeyboardButton().setText("Avangard").setSwitchInlineQuery("Team \"Avangard\" is very cool"));
+        keyboardButtonsRow2.add(new InlineKeyboardButton().setText("Ak Bars").setCallbackData("Team \"Ak Bars\" is very technical"));
         rowList.add(keyboardButtonsRow2);
 
         inlineKeyboardMarkup.setKeyboard(rowList);
         return new SendMessage().setChatId(chatId).setText("What do you choose?").setReplyMarkup(inlineKeyboardMarkup);
     }
 
+    public static SendMessage sendReplyKeyBoardMessage(long chatId){
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        replyKeyboardMarkup.setOneTimeKeyboard(true);
+
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        KeyboardRow keyboardFirstRow = new KeyboardRow();
+        keyboardFirstRow.add("Food");
+        keyboardFirstRow.add("Film");
+        KeyboardRow keyboardSecondRow = new KeyboardRow();
+        keyboardSecondRow.add("Sleep");
+        keyboardSecondRow.add('\u23F0'+"UNIX time"+(System.currentTimeMillis()/1000));
+        keyboard.add(keyboardFirstRow);
+        keyboard.add(keyboardSecondRow);
+        replyKeyboardMarkup.setKeyboard(keyboard);
+        return new SendMessage().setChatId(chatId).setText("Choose one button").setReplyMarkup(replyKeyboardMarkup);
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
         update.getUpdateId();
         SendMessage sendMessage = new SendMessage().setChatId((update.getMessage().getChatId()));
-        if (update.getMessage().getText().equals("Team")) {
+        if (update.getMessage().getText().equals("My keyboard")) {
+            try {
+                execute(sendReplyKeyBoardMessage(update.getMessage().getChatId()));
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        } else if(update.getMessage().getText().equals("Team")){
             try {
                 execute(sendInlineKeyBoardMessage(update.getMessage().getChatId()));
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
-        } else {
+        } else
+            {
             if (update.getMessage().getText().equals("/hello")) {
                 sendMessage.setText(String.valueOf(new HelloCommand()));
             } else if (update.getMessage().getText().equals("Who is the champion?")) {
