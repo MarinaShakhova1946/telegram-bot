@@ -5,10 +5,10 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.ApiContext;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -59,7 +59,7 @@ public class MyBot extends TelegramLongPollingBot {
         return new SendMessage().setChatId(chatId).setText("What do you choose?").setReplyMarkup(inlineKeyboardMarkup);
     }
 
-    public static SendMessage sendReplyKeyBoardMessage(long chatId){
+    public static SendMessage sendReplyKeyBoardMessage(long chatId) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setOneTimeKeyboard(true);
 
@@ -69,7 +69,7 @@ public class MyBot extends TelegramLongPollingBot {
         keyboardFirstRow.add("Film");
         KeyboardRow keyboardSecondRow = new KeyboardRow();
         keyboardSecondRow.add("Sleep");
-        keyboardSecondRow.add('\u23F0'+"UNIX time"+(System.currentTimeMillis()/1000));
+        keyboardSecondRow.add('\u23F0' + "UNIX time" + (System.currentTimeMillis() / 1000));
         keyboard.add(keyboardFirstRow);
         keyboard.add(keyboardSecondRow);
         replyKeyboardMarkup.setKeyboard(keyboard);
@@ -86,14 +86,25 @@ public class MyBot extends TelegramLongPollingBot {
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
-        } else if(update.getMessage().getText().equals("Team")){
+        } else if (update.getMessage().getText().equals("Team")) {
             try {
                 execute(sendInlineKeyBoardMessage(update.getMessage().getChatId()));
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
-        } else
-            {
+        } else if(update.hasCallbackQuery()){
+                String callbackId = update.getCallbackQuery().getId();
+                AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery()
+                        .setCallbackQueryId(callbackId)
+                        .setText("Okey")
+                        .setShowAlert(true);
+            try {
+                execute(answerCallbackQuery);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
             if (update.getMessage().getText().equals("/hello")) {
                 sendMessage.setText(String.valueOf(new HelloCommand()));
             } else if (update.getMessage().getText().equals("Who is the champion?")) {
