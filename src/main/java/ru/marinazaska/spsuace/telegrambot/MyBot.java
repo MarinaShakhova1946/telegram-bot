@@ -2,7 +2,7 @@ package ru.marinazaska.spsuace.telegrambot;
 
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.ApiContext;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
@@ -18,13 +18,14 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyBot extends TelegramLongPollingBot {
+public class MyBot extends TelegramLongPollingCommandBot {
 
     public static final String USERNAME = "@Mashas_SKA_Bot";
     public static final String TOKEN = "725156186:AAGJ_40zF7T5pFg50uruFTz_iz-Cqui1jnc";
 
     public MyBot(DefaultBotOptions botOptions) {
-        super(botOptions);
+        super(botOptions, USERNAME);
+        register(new HelloCommand());
     }
 
     public static void main(String[] args) {
@@ -46,17 +47,28 @@ public class MyBot extends TelegramLongPollingBot {
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
 
-        keyboardButtonsRow1.add(new InlineKeyboardButton().setText("Jokerit").setSwitchInlineQueryCurrentChat("Team \"Jokerit\" is very strong"));
-        keyboardButtonsRow1.add(new InlineKeyboardButton().setText("SKA").setUrl("ska.ru"));
+        keyboardButtonsRow1.add(new InlineKeyboardButton()
+                .setText("Jokerit")
+                .setSwitchInlineQueryCurrentChat("Team \"Jokerit\" is very strong"));
+        keyboardButtonsRow1.add(new InlineKeyboardButton()
+                .setText("SKA")
+                .setUrl("ska.ru"));
         rowList.add(keyboardButtonsRow1);
 
         List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
-        keyboardButtonsRow2.add(new InlineKeyboardButton().setText("Avangard").setSwitchInlineQuery("Team \"Avangard\" is very cool"));
-        keyboardButtonsRow2.add(new InlineKeyboardButton().setText("Ak Bars").setCallbackData("Team \"Ak Bars\" is very technical"));
+        keyboardButtonsRow2.add(new InlineKeyboardButton()
+                .setText("Avangard")
+                .setSwitchInlineQuery("Team \"Avangard\" is very cool"));
+        keyboardButtonsRow2.add(new InlineKeyboardButton()
+                .setText("Ak Bars")
+                .setCallbackData("Team \"Ak Bars\" is very technical"));
         rowList.add(keyboardButtonsRow2);
 
         inlineKeyboardMarkup.setKeyboard(rowList);
-        return new SendMessage().setChatId(chatId).setText("What do you choose?").setReplyMarkup(inlineKeyboardMarkup);
+        return new SendMessage()
+                .setChatId(chatId)
+                .setText("What do you choose?")
+                .setReplyMarkup(inlineKeyboardMarkup);
     }
 
     public static SendMessage sendReplyKeyBoardMessage(long chatId) {
@@ -73,11 +85,14 @@ public class MyBot extends TelegramLongPollingBot {
         keyboard.add(keyboardFirstRow);
         keyboard.add(keyboardSecondRow);
         replyKeyboardMarkup.setKeyboard(keyboard);
-        return new SendMessage().setChatId(chatId).setText("Choose one button").setReplyMarkup(replyKeyboardMarkup);
+        return new SendMessage()
+                .setChatId(chatId)
+                .setText("Choose one button")
+                .setReplyMarkup(replyKeyboardMarkup);
     }
 
     @Override
-    public void onUpdateReceived(Update update) {
+    public void processNonCommandUpdate(Update update) {
         update.getUpdateId();
         if (update.hasMessage()) {
             SendMessage sendMessage = new SendMessage().setChatId((update.getMessage().getChatId()));
@@ -94,8 +109,8 @@ public class MyBot extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             } else {
-                if (update.getMessage().getText().equals("/hello")) {
-                    sendMessage.setText(String.valueOf(new HelloCommand()));
+                if (update.getMessage().getText().equals("hello")) {
+                    sendMessage.setText("I can answer you!");
                 } else if (update.getMessage().getText().equals("Who is the champion?")) {
                     sendMessage.setText("SKA IS THE BEST!!!");
                 } else {
@@ -119,11 +134,6 @@ public class MyBot extends TelegramLongPollingBot {
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public String getBotUsername() {
-        return USERNAME;
     }
 
     @Override
